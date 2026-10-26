@@ -274,6 +274,9 @@
                     </button>
 
                     <!-- زر الوضع الليلي (Dark Mode) -->
+                    <button onclick="openSettingsModal()" id="settings-btn" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/60 flex items-center justify-center text-slate-600 dark:text-slate-300 active:scale-90 transition hover:text-indigo-500" title="إعدادات الجدول، النسخ الاحتياطي والمظهر">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </button>
                     <button onclick="toggleDarkMode()" id="theme-btn" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/60 flex items-center justify-center text-slate-600 dark:text-slate-300 active:scale-90 transition" title="تبديل الوضع الليلي">
                         <!-- أيقونة الشمس -->
                         <svg id="theme-sun" class="w-4 h-4 hidden text-amber-400" fill="currentColor" viewBox="0 0 20 20">
@@ -338,9 +341,15 @@
                 </div>
 
                 <div>
-                    <h2 id="day-title" class="text-lg font-black tracking-tight text-white drop-shadow-sm flex items-center gap-2">
-                        السبت
-                    </h2>
+                    <div class="flex items-center justify-between">
+                        <h2 id="day-title" class="text-lg font-black tracking-tight text-white drop-shadow-sm flex items-center gap-2">
+                            السبت
+                        </h2>
+                        <button onclick="openEditDayModal()" class="px-2.5 py-1 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/25 text-white text-[11px] font-bold flex items-center gap-1 active:scale-95 transition" title="تعديل تفاصيل وخلفية هذا اليوم">
+                            <span>✏️</span>
+                            <span>تخصيص اليوم</span>
+                        </button>
+                    </div>
                     <p id="day-subtitle" class="text-xs text-slate-200 font-medium line-clamp-1 opacity-90 drop-shadow-xs">
                         جامعة + تدريب كاراتيه
                     </p>
@@ -534,6 +543,174 @@
         </div>
     </div>
 
+    
+    <!-- نافذة تعديل الحصة القائمة (Edit Task Modal) -->
+    <div id="edit-task-modal" class="fixed inset-0 z-50 hidden bg-slate-950/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-5 shadow-2xl border border-slate-200 dark:border-slate-800 animate-slide-up">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">✏️</span>
+                    <h3 class="font-black text-sm text-slate-900 dark:text-white">تعديل الحصة / المهمة</h3>
+                </div>
+                <button onclick="closeEditTaskModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold flex items-center justify-center">✕</button>
+            </div>
+            <form id="edit-task-form" onsubmit="saveEditedTask(event)" class="space-y-3">
+                <input type="hidden" id="edit-task-id">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">التوقيت</label>
+                    <input type="text" id="edit-task-time" required placeholder="08:30 - 11:30" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-indigo-500 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white num-font">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">عنوان الحصة / المادة</label>
+                    <input type="text" id="edit-task-title" required placeholder="عنوان الحصة" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-indigo-500 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">الملاحظات / التفاصيل (المكان أو الأستاذ أو الموضوع)</label>
+                    <input type="text" id="edit-task-desc" placeholder="تفاصيل إضافية" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-indigo-500 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">التصنيف</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="flex items-center gap-2 p-2.5 border border-amber-200 dark:border-amber-900/50 bg-amber-50/70 dark:bg-amber-950/30 rounded-xl cursor-pointer">
+                            <input type="radio" name="edit-task-type" value="bac" class="accent-amber-600">
+                            <span class="text-xs font-bold text-amber-900 dark:text-amber-300">📚 بكالوريا</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2.5 border border-blue-200 dark:border-blue-900/50 bg-blue-50/70 dark:bg-blue-950/30 rounded-xl cursor-pointer">
+                            <input type="radio" name="edit-task-type" value="uni" class="accent-blue-600">
+                            <span class="text-xs font-bold text-blue-900 dark:text-blue-300">🎓 الجامعة</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2.5 border border-rose-200 dark:border-rose-900/50 bg-rose-50/70 dark:bg-rose-950/30 rounded-xl cursor-pointer">
+                            <input type="radio" name="edit-task-type" value="karate" class="accent-rose-600">
+                            <span class="text-xs font-bold text-rose-900 dark:text-rose-300">🥋 كاراتيه</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 rounded-xl cursor-pointer">
+                            <input type="radio" name="edit-task-type" value="rest" class="accent-slate-600">
+                            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">☕ راحة / أخرى</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 pt-2">
+                    <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3 rounded-xl shadow-md transition text-xs flex items-center justify-center gap-1.5">
+                        <span>💾</span>
+                        <span>حفظ التعديلات</span>
+                    </button>
+                    <button type="button" onclick="confirmDeleteCurrentTask()" class="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/50 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60 font-bold py-3 px-3.5 rounded-xl transition text-xs flex items-center justify-center" title="حذف هذه الحصة تماماً">
+                        <span>🗑️ حذف</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة تخصيص تفاصيل اليوم (Edit Day Modal) -->
+    <div id="edit-day-modal" class="fixed inset-0 z-50 hidden bg-slate-950/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-5 shadow-2xl border border-slate-200 dark:border-slate-800 animate-slide-up">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">🎨</span>
+                    <h3 class="font-black text-sm text-slate-900 dark:text-white">تخصيص بيانات يوم <span id="edit-day-name-title" class="text-indigo-600 dark:text-indigo-400"></span></h3>
+                </div>
+                <button onclick="closeEditDayModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold flex items-center justify-center">✕</button>
+            </div>
+            <form id="edit-day-form" onsubmit="saveDayCustomization(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">الوصف المختصر لليوم</label>
+                    <input type="text" id="edit-day-desc" required placeholder="مثال: جامعة + تدريب كاراتيه مسائي" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-indigo-500 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">رابط صورة الغلاف (Unsplash أو رابط خارجي)</label>
+                    <input type="url" id="edit-day-image" required placeholder="https://images.unsplash.com/..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:border-indigo-500 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white num-font" dir="ltr">
+                    <!-- خيارات صور سريعة مقترحة عالية الدقة -->
+                    <div class="mt-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+                        <button type="button" onclick="setPresetHeroImg('https://images.unsplash.com/photo-1555597673-b21d5c935865?w=800&auto=format&fit=crop&q=80')" class="shrink-0 px-2.5 py-1 text-[10px] font-bold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">🥋 كاراتيه</button>
+                        <button type="button" onclick="setPresetHeroImg('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=800&auto=format&fit=crop&q=80')" class="shrink-0 px-2.5 py-1 text-[10px] font-bold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">🏛️ مدرج جامعة</button>
+                        <button type="button" onclick="setPresetHeroImg('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=80')" class="shrink-0 px-2.5 py-1 text-[10px] font-bold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">📚 مكتب دراسة</button>
+                        <button type="button" onclick="setPresetHeroImg('https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800&auto=format&fit=crop&q=80')" class="shrink-0 px-2.5 py-1 text-[10px] font-bold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">📖 مكتبة هادئة</button>
+                        <button type="button" onclick="setPresetHeroImg('https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&auto=format&fit=crop&q=80')" class="shrink-0 px-2.5 py-1 text-[10px] font-bold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">☕ هدوء وقهوة</button>
+                    </div>
+                </div>
+                <div class="space-y-2 pt-1">
+                    <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 cursor-pointer">
+                        <input type="checkbox" id="edit-day-green" class="accent-emerald-600 rounded">
+                        <span class="text-xs font-bold text-slate-800 dark:text-slate-200">🟢 تفرغ كامل من الجامعة (يوم أخضر)</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 cursor-pointer">
+                        <input type="checkbox" id="edit-day-karate" class="accent-rose-600 rounded">
+                        <span class="text-xs font-bold text-slate-800 dark:text-slate-200">🥋 يحتوي على حصة كاراتيه (إطار أحمر)</span>
+                    </label>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3 rounded-xl shadow-md transition text-xs flex items-center justify-center gap-2 mt-2">
+                    <span>💾</span>
+                    <span>حفظ مظهر اليوم</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة إدارة الجدول والنسخ الاحتياطي وتعديل كلمة المرور (Settings & Backup Modal) -->
+    <div id="settings-modal" class="fixed inset-0 z-50 hidden bg-slate-950/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-[32px] sm:rounded-3xl max-h-[85vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-slide-up">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-900/50">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">⚙️</span>
+                    <h3 class="font-black text-sm text-slate-900 dark:text-white">إعدادات الجدول والتحكم الكامل</h3>
+                </div>
+                <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold flex items-center justify-center">✕</button>
+            </div>
+            <div class="p-4 overflow-y-auto space-y-4 text-xs">
+                
+                <!-- قسم 1: النسخ الاحتياطي والنقل -->
+                <div class="p-3.5 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-200/80 dark:border-indigo-900/50">
+                    <h4 class="font-black text-indigo-900 dark:text-indigo-300 mb-1 flex items-center gap-1.5">
+                        <span>💾</span> النسخ الاحتياطي ومزامنة الأجهزة
+                    </h4>
+                    <p class="text-[11px] text-slate-600 dark:text-slate-400 mb-3 leading-relaxed">
+                        يمكنك تصدير نسختك الخاصة من الجدول بصيغة ملف JSON واستعادتها على أي هاتف أو جهاز آخر في ثانية واحدة!
+                    </p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="exportScheduleJSON()" class="py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition">
+                            <span>📥</span> تصدير نسخة (Backup)
+                        </button>
+                        <label class="py-2.5 px-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-extrabold flex items-center justify-center gap-1.5 shadow-sm cursor-pointer active:scale-95 transition">
+                            <span>📤</span> استيراد نسخة
+                            <input type="file" id="import-json-file" accept=".json" onchange="importScheduleJSON(event)" class="hidden">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- قسم 2: تغيير كلمة المرور المخصصة -->
+                <div class="p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                    <h4 class="font-black text-slate-900 dark:text-white mb-1 flex items-center gap-1.5">
+                        <span>🔒</span> تغيير كلمة المرور السرية
+                    </h4>
+                    <p class="text-[11px] text-slate-600 dark:text-slate-400 mb-2.5">
+                        يمكنك تعيين كلمة سر جديدة خاصة بك تفتح التطبيق حصرياً:
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <input type="password" id="new-password-input" placeholder="كلمة المرور الجديدة..." class="flex-1 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs">
+                        <button onclick="changeCustomPassword()" class="px-3.5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-black text-xs shrink-0 active:scale-95 transition">
+                            تحديث
+                        </button>
+                    </div>
+                </div>
+
+                <!-- قسم 3: استعادة جدول نور الأصلي المعتمد -->
+                <div class="p-3.5 rounded-2xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40">
+                    <h4 class="font-black text-rose-900 dark:text-rose-300 mb-1 flex items-center gap-1.5">
+                        <span>⚠️</span> إعادة الضبط للجدول الأصلي
+                    </h4>
+                    <p class="text-[11px] text-slate-600 dark:text-slate-400 mb-2.5 leading-relaxed">
+                        إذا قمت بتعديلات كثيرة وتريد العودة للجدول الأساسي الموثق من دفتر نور:
+                    </p>
+                    <button onclick="confirmResetAllToDefault()" class="w-full py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-extrabold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition">
+                        <span>🔄</span> استرجاع الجدول الأصلي الافتراضي
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <!-- شريط التنقل السفلي للهاتف بتصميم حديث ملائم للإبهام (Thumb-friendly Bottom Bar) -->
     <nav class="fixed bottom-0 inset-x-0 z-40 glass-header border-t border-slate-200/80 dark:border-slate-800/80 px-4 py-2 pb-[calc(8px+var(--sab))]">
         <div class="max-w-md mx-auto flex items-center justify-around">
@@ -662,7 +839,7 @@
            قاعدة بيانات جدول نور (L3 اللغة الروسية - جامعة الجزائر 2 + بكالوريا + كاراتيه)
            الصور من Unsplash بروابط مجانية حقيقية ومحسنة للسرعة
            ======================================================== */
-        const scheduleData = [
+        const DEFAULT_SCHEDULE_DATA = [
             {
                 id: 'sat',
                 name: 'السبت',
@@ -778,12 +955,14 @@
         ];
 
         /* ================= المتغيرات العامة ================= */
+        let scheduleData = [];
         let currentDayIndex = 0;
         let activeFilter = 'all';
         let completedTasks = {};
         let customTasksByDay = {};
         let soundEnabled = true;
         let streakCount = 1;
+        let activeEditingTaskId = null;
 
         // متغيرات مؤقت البومودورو
         let pomoInterval = null;
@@ -932,9 +1111,21 @@
             }
         }
 
-        /* ================= حفظ واسترجاع الحالة ================= */
+        /* ================= حفظ واسترجاع الحالة والجدول المخصص ================= */
         function loadState() {
             try {
+                // استرجاع الجدول الرئيسي (إما المعدل المحفوظ أو الافتراضي)
+                const savedSchedule = localStorage.getItem('nour_schedule_data_v3');
+                if (savedSchedule) {
+                    try {
+                        scheduleData = JSON.parse(savedSchedule);
+                    } catch (err) {
+                        scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE_DATA));
+                    }
+                } else {
+                    scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE_DATA));
+                }
+
                 const savedChecks = localStorage.getItem('nour_schedule_checks_v2');
                 if (savedChecks) completedTasks = JSON.parse(savedChecks);
 
@@ -946,14 +1137,17 @@
 
                 const savedStreak = localStorage.getItem('nour_schedule_streak');
                 if (savedStreak) streakCount = parseInt(savedStreak, 10) || 1;
-                document.getElementById('streak-count').textContent = streakCount;
+                const streakEl = document.getElementById('streak-count');
+                if (streakEl) streakEl.textContent = streakCount;
             } catch (e) {
                 console.warn('Could not load state', e);
+                scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE_DATA));
             }
         }
 
         function saveState() {
             try {
+                localStorage.setItem('nour_schedule_data_v3', JSON.stringify(scheduleData));
                 localStorage.setItem('nour_schedule_checks_v2', JSON.stringify(completedTasks));
                 localStorage.setItem('nour_schedule_custom_v2', JSON.stringify(customTasksByDay));
                 localStorage.setItem('nour_schedule_streak', streakCount.toString());
@@ -1082,7 +1276,7 @@
                     }`;
 
                     card.onclick = (e) => {
-                        if (e.target.closest('.delete-task-btn')) return;
+                        if (e.target.closest('.task-action-btn')) return;
                         toggleTaskDone(task.id);
                     };
 
@@ -1119,11 +1313,17 @@
                             ` : ''}
                         </div>
 
-                        ${task.isCustom ? `
-                            <button onclick="deleteCustomTask('${day.id}', '${task.id}')" class="delete-task-btn text-slate-400 hover:text-rose-500 p-1 text-xs" title="حذف">
-                                🗑️
+                        <!-- أزرار الإجراءات السريعة (تعديل وحذف) -->
+                        <div class="flex items-center gap-1 shrink-0">
+                            <button onclick="openEditTaskModal('${task.id}')" class="task-action-btn w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 flex items-center justify-center text-xs transition" title="تعديل تفاصيل هذه الحصة">
+                                ✏️
                             </button>
-                        ` : ''}
+                            ${task.isCustom ? `
+                                <button onclick="deleteCustomTask('${day.id}', '${task.id}')" class="task-action-btn w-7 h-7 rounded-lg bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 text-rose-500 flex items-center justify-center text-xs transition" title="حذف المهمة المخصصة">
+                                    🗑️
+                                </button>
+                            ` : ''}
+                        </div>
                     `;
                     list.appendChild(card);
                 });
@@ -1525,6 +1725,221 @@
                 if (currentDayIndex > 0) selectDay(currentDayIndex - 1);
             } else if (diff < -65) {
                 if (currentDayIndex < scheduleData.length - 1) selectDay(currentDayIndex + 1);
+            }
+        }
+
+        
+        /* ========================================================
+           منظومة التعديل والتحكم الكامل في الجدول (Customization & Editing API)
+           ======================================================== */
+
+        // 1. تعديل الحصة القائمة
+        function openEditTaskModal(taskId) {
+            activeEditingTaskId = taskId;
+            const day = scheduleData[currentDayIndex];
+            const allTasks = getDayTasks(day.id);
+            const task = allTasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            document.getElementById('edit-task-id').value = task.id;
+            document.getElementById('edit-task-time').value = task.time || '';
+            document.getElementById('edit-task-title').value = task.title || '';
+            document.getElementById('edit-task-desc').value = task.subtitle || '';
+
+            const radio = document.querySelector(`input[name="edit-task-type"][value="${task.type || 'uni'}"]`);
+            if (radio) radio.checked = true;
+
+            document.getElementById('edit-task-modal').classList.remove('hidden');
+        }
+
+        function closeEditTaskModal() {
+            document.getElementById('edit-task-modal').classList.add('hidden');
+            activeEditingTaskId = null;
+        }
+
+        function saveEditedTask(e) {
+            e.preventDefault();
+            const taskId = document.getElementById('edit-task-id').value;
+            const time = document.getElementById('edit-task-time').value.trim();
+            const title = document.getElementById('edit-task-title').value.trim();
+            const subtitle = document.getElementById('edit-task-desc').value.trim();
+            const type = document.querySelector('input[name="edit-task-type"]:checked').value;
+
+            const day = scheduleData[currentDayIndex];
+
+            // التحقق هل المهمة في المهام المخصصة أم الجدول الأساسي
+            let customFound = false;
+            if (customTasksByDay[day.id]) {
+                const cIdx = customTasksByDay[day.id].findIndex(t => t.id === taskId);
+                if (cIdx !== -1) {
+                    customTasksByDay[day.id][cIdx] = {
+                        ...customTasksByDay[day.id][cIdx],
+                        time,
+                        title,
+                        subtitle,
+                        type
+                    };
+                    customFound = true;
+                }
+            }
+
+            if (!customFound) {
+                // مهمة من الجدول الأساسي لليوم
+                const tIdx = day.tasks.findIndex(t => t.id === taskId);
+                if (tIdx !== -1) {
+                    day.tasks[tIdx].time = time;
+                    day.tasks[tIdx].title = title;
+                    day.tasks[tIdx].subtitle = subtitle;
+                    day.tasks[tIdx].type = type;
+                }
+            }
+
+            saveState();
+            closeEditTaskModal();
+            renderDaySchedule();
+            playTone(600, 'sine', 0.12);
+        }
+
+        function confirmDeleteCurrentTask() {
+            if (!activeEditingTaskId) return;
+            if (!confirm('هل أنت متأكد من حذف هذه الحصة تماماً من الجدول؟')) return;
+
+            const day = scheduleData[currentDayIndex];
+            const taskId = activeEditingTaskId;
+
+            if (customTasksByDay[day.id]) {
+                customTasksByDay[day.id] = customTasksByDay[day.id].filter(t => t.id !== taskId);
+            }
+            day.tasks = day.tasks.filter(t => t.id !== taskId);
+            delete completedTasks[taskId];
+
+            saveState();
+            closeEditTaskModal();
+            renderDaySchedule();
+            playTone(300, 'sine', 0.1);
+        }
+
+        // 2. تخصيص اليوم (العنوان، الوصف، الخلفية والشارات)
+        function openEditDayModal() {
+            const day = scheduleData[currentDayIndex];
+            document.getElementById('edit-day-name-title').textContent = day.name;
+            document.getElementById('edit-day-desc').value = day.shortDesc || '';
+            document.getElementById('edit-day-image').value = day.heroImage || '';
+            document.getElementById('edit-day-green').checked = !!day.isGreenNoUni;
+            document.getElementById('edit-day-karate').checked = !!day.isKarateBox;
+
+            document.getElementById('edit-day-modal').classList.remove('hidden');
+        }
+
+        function closeEditDayModal() {
+            document.getElementById('edit-day-modal').classList.add('hidden');
+        }
+
+        function setPresetHeroImg(url) {
+            document.getElementById('edit-day-image').value = url;
+        }
+
+        function saveDayCustomization(e) {
+            e.preventDefault();
+            const day = scheduleData[currentDayIndex];
+            day.shortDesc = document.getElementById('edit-day-desc').value.trim();
+            day.heroImage = document.getElementById('edit-day-image').value.trim();
+            day.isGreenNoUni = document.getElementById('edit-day-green').checked;
+            day.isKarateBox = document.getElementById('edit-day-karate').checked;
+
+            saveState();
+            closeEditDayModal();
+            renderDayTabs();
+            renderDaySchedule();
+            playVictorySound();
+            triggerConfetti();
+        }
+
+        // 3. إدارة الإعدادات والنسخ الاحتياطي وتغيير كلمة المرور
+        function openSettingsModal() {
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').classList.add('hidden');
+        }
+
+        function changeCustomPassword() {
+            const input = document.getElementById('new-password-input');
+            const newPass = input.value.trim();
+            if (!newPass || newPass.length < 3) {
+                alert('يرجى كتابة كلمة مرور صالحة (3 أحرف أو أرقام على الأقل)');
+                return;
+            }
+            localStorage.setItem('nour_custom_password', newPass);
+            alert('تم تغيير وتحديث كلمة المرور بنجاح! كلمة مرورك الجديدة هي: ' + newPass);
+            input.value = '';
+            playVictorySound();
+        }
+
+        function exportScheduleJSON() {
+            const exportData = {
+                version: '3.0',
+                appName: 'Nour Schedule',
+                exportedAt: new Date().toISOString(),
+                scheduleData: scheduleData,
+                customTasksByDay: customTasksByDay,
+                completedTasks: completedTasks,
+                streakCount: streakCount
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", "nour_schedule_backup_" + new Date().toISOString().slice(0, 10) + ".json");
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+            playVictorySound();
+        }
+
+        function importScheduleJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (imported.scheduleData && Array.isArray(imported.scheduleData)) {
+                        scheduleData = imported.scheduleData;
+                        if (imported.customTasksByDay) customTasksByDay = imported.customTasksByDay;
+                        if (imported.completedTasks) completedTasks = imported.completedTasks;
+                        if (imported.streakCount) streakCount = imported.streakCount;
+
+                        saveState();
+                        renderDayTabs();
+                        renderDaySchedule();
+                        closeSettingsModal();
+                        playVictorySound();
+                        triggerFullCelebration();
+                        alert('تم استيراد نسختك بنجاح وتحديث الجدول بالكامل! 🎉');
+                    } else {
+                        alert('الملف الذي اخترته غير متوافق مع الجدول.');
+                    }
+                } catch (err) {
+                    alert('حدث خطأ أثناء قراءة الملف: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function confirmResetAllToDefault() {
+            if (confirm('هل أنت متأكد من استرجاع الجدول الأصلي الافتراضي وإلغاء جميع التعديلات؟')) {
+                scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE_DATA));
+                customTasksByDay = {};
+                completedTasks = {};
+                saveState();
+                renderDayTabs();
+                renderDaySchedule();
+                closeSettingsModal();
+                playTone(400, 'sine', 0.2);
+                alert('تمت استعادة الجدول الأصلي بنجاح 🔄');
             }
         }
 
