@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>منظم وقت نور | L3 الروسية • الباك • الكاراتيه</title>
+    
+    <!-- خطوط جوجل المتناسقة -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- مكتبة Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        mono: ['"Plus Jakarta Sans"', 'monospace']
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#1e1b4b',
+                        },
+                        karate: {
+                            50: '#fff1f2',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            900: '#881337',
+                        },
+                        bac: {
+                            50: '#fffbeb',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            900: '#78350f',
+                        },
+                        uni: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 2.5s infinite',
+                        'bounce-subtle': 'bounceSubtle 0.3s ease-out',
+                        'slide-up': 'slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+                        'shake': 'shake 0.4s ease-in-out',
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 1, transform: 'scale(1)' },
+                            '50%': { opacity: 0.6, transform: 'scale(1.05)' },
+                        },
+                        bounceSubtle: {
+                            '0%': { transform: 'scale(0.95)' },
+                            '50%': { transform: 'scale(1.03)' },
+                            '100%': { transform: 'scale(1)' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(100%)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '20%, 60%': { transform: 'translateX(-8px)' },
+                            '40%, 80%': { transform: 'translateX(8px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- مكتبة الاحتفال (Canvas Confetti) -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --sat: env(safe-area-inset-top);
+            --sab: env(safe-area-inset-bottom);
+        }
+        body {
+            font-family: 'Cairo', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            padding-bottom: calc(85px + var(--sab));
+        }
+        .num-font {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-feature-settings: "tnum";
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .touch-action-pan-y {
+            touch-action: pan-y;
+        }
+        /* تأثيرات النيون والزجاج (Glassmorphism) */
+        .glass-header {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+        .dark .glass-header {
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        .dark .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(8px);
+        }
+        .active-indicator {
+            box-shadow: 0 0 15px rgba(225, 29, 72, 0.4);
+        }
+        .task-card {
+            transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease;
+        }
+        .task-card:active {
+            transform: scale(0.985);
+        }
+        .checkbox-pop {
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .checkbox-pop:active {
+            transform: scale(0.85);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-[#0B0F19] text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300">
+
+    <!-- شاشة تسجيل الدخول والقفل الفاخرة (Password Lock Screen) -->
+    <div id="lock-screen" class="fixed inset-0 z-50 bg-[#070A11] text-white flex items-center justify-center p-4 transition-all duration-500">
+        <div class="w-full max-w-sm rounded-[32px] p-7 bg-slate-900/90 border border-slate-800 shadow-2xl backdrop-blur-xl text-center relative overflow-hidden" id="lock-card">
+            <!-- إضاءة خلفية نيون ناعمة -->
+            <div class="absolute -top-10 -right-10 w-36 h-36 bg-indigo-600/20 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-10 -left-10 w-36 h-36 bg-rose-600/20 rounded-full blur-2xl"></div>
+
+            <!-- الصورة الرمزية وشارة الأمان -->
+            <div class="relative w-20 h-20 mx-auto mb-4">
+                <div class="w-full h-full rounded-3xl bg-gradient-to-tr from-indigo-500 via-rose-500 to-amber-400 p-[2px] shadow-lg shadow-indigo-500/20">
+                    <div class="w-full h-full bg-slate-950 rounded-[22px] flex items-center justify-center text-3xl">
+                        🥋
+                    </div>
+                </div>
+                <div class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-emerald-500 border-2 border-slate-950 flex items-center justify-center text-xs shadow-sm">
+                    🔒
+                </div>
+            </div>
+
+            <!-- العنوان والترحيب -->
+            <h2 class="text-xl font-black tracking-tight text-white mb-1">منطقة نور الخاصة</h2>
+            <p class="text-xs text-slate-400 font-semibold mb-6">L3 اللغة الروسية • بكالوريا • كاراتيه</p>
+
+            <!-- نموذج إدخال كلمة المرور -->
+            <form id="login-form" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                <div class="relative text-right">
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            id="password-input" 
+                            required 
+                            autocomplete="current-password" 
+                            placeholder="أدخل كلمة المرور" 
+                            class="w-full pl-11 pr-11 py-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 text-sm font-bold text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-all text-center tracking-widest num-font"
+                        >
+                        <!-- أيقونة القفل باليمين -->
+                        <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm">
+                            🔑
+                        </span>
+                        <!-- زر إظهار/إخفاء كلمة المرور باليسار -->
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs p-1" title="إظهار / إخفاء">
+                            <span id="eye-icon">👁️</span>
+                        </button>
+                    </div>
+                    <!-- رسالة الخطأ التفاعلية -->
+                    <p id="password-error" class="hidden text-[11px] font-bold text-rose-400 text-center mt-2 flex items-center justify-center gap-1">
+                        <span>⚠️</span> <span>كلمة المرور غير صحيحة، حاول مجدداً</span>
+                    </p>
+                </div>
+
+                <!-- خيار تذكرني على هذا الجهاز -->
+                <div class="flex items-center justify-between text-xs px-1 text-slate-400">
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <input type="checkbox" id="remember-me" checked class="accent-indigo-600 rounded">
+                        <span class="text-[11px] font-medium text-slate-300">تذكرني على هذا الجهاز</span>
+                    </label>
+                    <span class="text-[10px] text-slate-500">مشفر ومحمي 🛡️</span>
+                </div>
+
+                <!-- زر الدخول الرئيسي -->
+                <button type="submit" id="login-btn" class="w-full bg-gradient-to-r from-indigo-600 via-indigo-700 to-rose-600 hover:opacity-95 active:scale-98 text-white font-black py-3.5 rounded-2xl shadow-lg shadow-indigo-600/30 text-sm transition-all flex items-center justify-center gap-2">
+                    <span>دخول للمنظم</span>
+                    <span>⚡</span>
+                </button>
+            </form>
+
+            <!-- تلميح مريح -->
+            <div class="mt-6 pt-4 border-t border-slate-800/80 text-[11px] text-slate-500">
+                <span>كلمة المرور الافتراضية: </span>
+                <code class="px-2 py-0.5 rounded-md bg-slate-800 text-indigo-400 font-bold num-font">nour2026</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- شريط الحالة العلوي الثابت مع أدوات التحكم -->
+    <header class="sticky top-0 z-40 glass-header border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs px-4 pt-3 pb-2.5">
+        <div class="max-w-md mx-auto">
+            
+            <!-- السطر الأول: تحية نور + الساعة الحية + تبديل الوضع الليلي والأصوات والقفل -->
+            <div class="flex items-center justify-between mb-2.5">
+                <div class="flex items-center gap-2.5">
+                    <div class="relative">
+                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-rose-500 to-amber-400 p-[2px] shadow-sm">
+                            <div class="w-full h-full bg-white dark:bg-slate-900 rounded-[14px] flex items-center justify-center text-lg">
+                                🥋
+                            </div>
+                        </div>
+                        <span class="absolute -bottom-1 -right-1 flex h-3.5 w-3.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white dark:border-slate-900"></span>
+                        </span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <h1 class="text-base font-black tracking-tight text-slate-900 dark:text-white">جدول نور</h1>
+                            <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200/50 dark:border-indigo-800/50 num-font">L3 • BAC</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-semibold">
+                            <span id="live-clock" class="num-font text-[11px] text-indigo-600 dark:text-indigo-400 font-bold">--:--</span>
+                            <span>•</span>
+                            <span id="streak-badge" class="flex items-center gap-0.5 text-amber-600 dark:text-amber-400 font-bold">
+                                <span>🔥</span> <span id="streak-count" class="num-font">1</span> يوم التزام
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- أزرار الإعدادات السريعة (قفل + كتم الصوت + الوضع الليلي) -->
+                <div class="flex items-center gap-1.5">
+                    <!-- زر قفل التطبيق وتأمين الخصوصية -->
+                    <button onclick="lockApp()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/60 flex items-center justify-center text-slate-600 dark:text-slate-300 active:scale-90 transition hover:text-rose-500" title="قفل التطبيق وتأمين الخصوصية">
+                        <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </button>
+
+                    <!-- زر الصوت -->
+                    <button onclick="toggleAudio()" id="sound-btn" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/60 flex items-center justify-center text-slate-600 dark:text-slate-300 active:scale-90 transition" title="كتم/تشغيل المؤثرات الصوتية">
+                        <svg id="sound-icon-on" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+                        </svg>
+                        <svg id="sound-icon-off" class="w-4 h-4 hidden text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/>
+                        </svg>
+                    </button>
+
+                    <!-- زر الوضع الليلي (Dark Mode) -->
+                    <button onclick="toggleDarkMode()" id="theme-btn" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/60 flex items-center justify-center text-slate-600 dark:text-slate-300 active:scale-90 transition" title="تبديل الوضع الليلي">
+                        <!-- أيقونة الشمس -->
+                        <svg id="theme-sun" class="w-4 h-4 hidden text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/>
+                        </svg>
+                        <!-- أيقونة القمر -->
+                        <svg id="theme-moon" class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- بطاقة التقدم وإنجاز اليوم -->
+            <div class="bg-white dark:bg-slate-900/90 rounded-2xl p-2.5 border border-slate-200/90 dark:border-slate-800 shadow-xs mb-2.5">
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <div class="flex items-center gap-1.5">
+                        <span id="progress-icon" class="text-sm">⚡</span>
+                        <span class="font-extrabold text-slate-800 dark:text-slate-200">إنجاز اليوم:</span>
+                        <span id="progress-status-msg" class="text-slate-500 dark:text-slate-400 text-[11px] font-medium">ابدأ أول مهمة!</span>
+                    </div>
+                    <div class="flex items-center gap-1 font-black num-font">
+                        <span id="progress-text" class="text-indigo-600 dark:text-indigo-400 font-extrabold text-sm">0%</span>
+                        <span id="tasks-fraction" class="text-[10px] text-slate-400 dark:text-slate-500">(0/0)</span>
+                    </div>
+                </div>
+                <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden p-[1px]">
+                    <div id="progress-bar" class="h-full rounded-full bg-gradient-to-l from-indigo-500 via-rose-500 to-emerald-400 transition-all duration-500 ease-out" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- شريط الأيام الأفقي المتجاوب باللمس -->
+            <div id="day-tabs" class="flex gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                <!-- يتم بناؤه بالجافاسكريبت -->
+            </div>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي للموبايل -->
+    <main class="max-w-md mx-auto px-4 pt-3.5 touch-action-pan-y" id="swipe-area">
+        
+        <!-- بنر اليوم مع صورة واقعية ذات جودة عالية من Unsplash وتأثير دمج سينمائي -->
+        <div id="day-hero" class="relative rounded-3xl overflow-hidden mb-4 border border-slate-200 dark:border-slate-800/80 shadow-md group">
+            <!-- الصورة الخلفية الحقيقية (Unsplash Curated) -->
+            <img id="day-hero-img" src="" alt="Theme Banner" class="w-full h-32 object-cover object-center filter brightness-[0.85] dark:brightness-[0.65] transition duration-700 scale-100 group-hover:scale-105">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"></div>
+            
+            <!-- محتوى البانر -->
+            <div class="absolute inset-0 p-3.5 flex flex-col justify-between text-white">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-1.5">
+                        <span id="hero-day-tag" class="text-[11px] font-black px-2.5 py-0.5 rounded-xl bg-white/20 backdrop-blur-md border border-white/20">
+                            اليوم
+                        </span>
+                        <span id="hero-now-badge" class="hidden text-[10px] font-black px-2 py-0.5 rounded-xl bg-emerald-500 text-white shadow-xs flex items-center gap-1 animate-pulse">
+                            <span class="w-1.5 h-1.5 rounded-full bg-white"></span> جارٍ الآن
+                        </span>
+                    </div>
+                    <div id="hero-special-badges" class="flex items-center gap-1">
+                        <!-- تظهر هنا شارة الكاراتيه أو شارة عدم وجود جامعة -->
+                    </div>
+                </div>
+
+                <div>
+                    <h2 id="day-title" class="text-lg font-black tracking-tight text-white drop-shadow-sm flex items-center gap-2">
+                        السبت
+                    </h2>
+                    <p id="day-subtitle" class="text-xs text-slate-200 font-medium line-clamp-1 opacity-90 drop-shadow-xs">
+                        جامعة + تدريب كاراتيه
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- فلاتر الفئات (سريعة وسلسة) -->
+        <div class="flex items-center justify-between gap-1.5 mb-3.5 overflow-x-auto no-scrollbar py-0.5">
+            <button onclick="setFilter('all')" id="filter-all" class="filter-btn active shrink-0 text-xs font-bold px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm transition active:scale-95">
+                الكل
+            </button>
+            <button onclick="setFilter('uni')" id="filter-uni" class="filter-btn shrink-0 text-xs font-bold px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900/50 transition flex items-center gap-1 active:scale-95">
+                <span>🎓</span> الجامعة
+            </button>
+            <button onclick="setFilter('bac')" id="filter-bac" class="filter-btn shrink-0 text-xs font-bold px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900/50 transition flex items-center gap-1 active:scale-95">
+                <span>📚</span> الباك
+            </button>
+            <button onclick="setFilter('karate')" id="filter-karate" class="filter-btn shrink-0 text-xs font-bold px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900/50 transition flex items-center gap-1 active:scale-95">
+                <span>🥋</span> الكاراتيه
+            </button>
+        </div>
+
+        <!-- بطاقة الإشارة للحصة الجارية الآن (تظهر إذا كان وقتها حالياً) -->
+        <div id="live-active-card" class="hidden mb-3.5 p-3 rounded-2xl bg-gradient-to-r from-indigo-500/10 via-rose-500/10 to-amber-500/10 border border-indigo-300 dark:border-indigo-800/80">
+            <div class="flex items-center gap-2 mb-1">
+                <span class="relative flex h-2.5 w-2.5">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+                <span class="text-xs font-black text-indigo-700 dark:text-indigo-300 uppercase">حصة الوقت الحالي (الآن)</span>
+            </div>
+            <div id="live-active-content" class="text-xs font-bold text-slate-800 dark:text-slate-100">
+                <!-- تفاصيل الحصة الجارية -->
+            </div>
+        </div>
+
+        <!-- قائمة مهام وحصص اليوم -->
+        <div id="schedule-list" class="space-y-2.5 min-h-[220px]">
+            <!-- يتم تعبئة البطاقات بالجافاسكريبت -->
+        </div>
+
+        <!-- الأزرار السريعة أسفل القائمة -->
+        <div class="mt-5 flex items-center gap-2 mb-6">
+            <button onclick="openAddModal()" class="flex-1 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 active:scale-98 text-white font-black py-3 px-4 rounded-2xl shadow-md shadow-indigo-500/20 flex items-center justify-center gap-2 text-xs transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                <span>إضافة حصة أو هدف لليوم</span>
+            </button>
+            <button onclick="confirmResetDay()" class="bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 active:scale-95 font-bold py-3 px-3.5 rounded-2xl text-xs transition" title="تصفير إنجاز هذا اليوم">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            </button>
+        </div>
+
+        <!-- بطاقة تحفيزية واقعية غير مكررة -->
+        <div class="p-3.5 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200/50 dark:from-slate-900/60 dark:to-slate-800/40 border border-slate-200/80 dark:border-slate-800 text-center mb-6">
+            <p id="motivational-quote" class="text-xs font-bold text-slate-700 dark:text-slate-300 leading-relaxed">
+                "الانضباط هو الجسر بين أهدافك وإنجازاتك.. بكالوريا، لغة روسية وكاراتيه!"
+            </p>
+            <span class="text-[10px] text-slate-400 dark:text-slate-500 mt-1 block">كل تيك (✓) يقربك خطوة للتميز 🏆</span>
+        </div>
+
+    </main>
+
+    <!-- نافذة البومودورو المتقدمة (Focus Pomodoro Modal) -->
+    <div id="pomodoro-modal" class="fixed inset-0 z-50 hidden bg-slate-950/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-t-[32px] sm:rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-slide-up">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">⏱️</span>
+                    <h3 class="font-black text-sm text-slate-900 dark:text-white">مؤقت التركيز الفائق (Pomodoro)</h3>
+                </div>
+                <button onclick="closePomodoroModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold flex items-center justify-center">✕</button>
+            </div>
+
+            <div class="text-center py-4">
+                <!-- الدائرة الزمنية المتفاعلة -->
+                <div class="relative w-44 h-44 mx-auto flex items-center justify-center">
+                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="44" class="stroke-slate-100 dark:stroke-slate-800" stroke-width="8" fill="transparent"/>
+                        <circle id="pomo-circle-bar" cx="50" cy="50" r="44" class="stroke-indigo-600 dark:stroke-indigo-500 transition-all duration-300" stroke-width="8" stroke-dasharray="276.46" stroke-dashoffset="0" stroke-linecap="round" fill="transparent"/>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span id="pomo-time-display" class="num-font text-3xl font-black text-slate-900 dark:text-white">25:00</span>
+                        <span id="pomo-state-label" class="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-0.5">جلسة بكالوريا</span>
+                    </div>
+                </div>
+
+                <!-- أزرار الاختيار المسبق للوقت -->
+                <div class="flex items-center justify-center gap-2 mt-4">
+                    <button onclick="setPomoDuration(25, 'جلسة بكالوريا / حفظ')" class="pomo-preset-btn px-3 py-1 rounded-xl text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">25 دقيقة</button>
+                    <button onclick="setPomoDuration(50, 'دراسة مكثفة (حل موضوع)')" class="pomo-preset-btn px-3 py-1 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">50 دقيقة</button>
+                    <button onclick="setPomoDuration(5, 'استراحة قصيرة ☕')" class="pomo-preset-btn px-3 py-1 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">5 د راحة</button>
+                </div>
+
+                <!-- أزرار التحكم -->
+                <div class="flex items-center justify-center gap-3 mt-6">
+                    <button onclick="togglePomoPlay()" id="pomo-play-btn" class="w-14 h-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white flex items-center justify-center shadow-lg shadow-indigo-600/30 text-xl transition">
+                        ▶
+                    </button>
+                    <button onclick="resetPomo()" class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 active:scale-95 flex items-center justify-center text-sm font-bold transition">
+                        🔄
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة ملخص الأسبوع (Weekly Matrix Modal) -->
+    <div id="matrix-modal" class="fixed inset-0 z-50 hidden bg-slate-950/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-t-[32px] sm:rounded-3xl max-h-[85vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-slide-up">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-900/50">
+                <h2 class="font-black text-slate-900 dark:text-white text-sm flex items-center gap-2">
+                    <span>🗓️</span> نظرة شاملة لجدول الأسبوع (دفتر نور)
+                </h2>
+                <button onclick="closeMatrixModal()" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold flex items-center justify-center">✕</button>
+            </div>
+            <div class="p-4 overflow-y-auto space-y-2.5 text-xs">
+                <!-- إحصائية الإنجاز العام للأسبوع -->
+                <div class="grid grid-cols-3 gap-2 text-center p-3 rounded-2xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                    <div>
+                        <div class="text-[10px] text-slate-500 dark:text-slate-400 font-bold">حصص الجامعة</div>
+                        <div id="stat-uni-count" class="num-font text-base font-black text-blue-600 dark:text-blue-400">11 حصة</div>
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-slate-500 dark:text-slate-400 font-bold">معسكرات الباك</div>
+                        <div id="stat-bac-count" class="num-font text-base font-black text-amber-600 dark:text-amber-400">10 حصص</div>
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-slate-500 dark:text-slate-400 font-bold">حصص الكاراتيه</div>
+                        <div class="num-font text-base font-black text-rose-600 dark:text-rose-400">3 حصص 🥋</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 text-[11px] font-bold">
+                    <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">🟢 أخضر = تفرغ من الجامعة</span>
+                    <span class="px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-600 dark:text-rose-400">🟥 إطار أحمر = كاراتيه</span>
+                </div>
+
+                <div id="matrix-content" class="space-y-2 pt-1">
+                    <!-- يملأ تلقائياً بالبيانات -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة مهمة / حصة جديدة (Add Modal) -->
+    <div id="add-modal" class="fixed inset-0 z-50 hidden bg-slate-950/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-5 shadow-2xl border border-slate-200 dark:border-slate-800 animate-slide-up">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-black text-sm text-slate-900 dark:text-white">إضافة حصة جديدة ليوم <span id="modal-day-name" class="text-indigo-600 dark:text-indigo-400"></span></h3>
+                <button onclick="closeAddModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold">✕</button>
+            </div>
+            <form id="add-task-form" onsubmit="saveCustomTask(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">الوقت (مثال: 17:00 - 18:30)</label>
+                    <input type="text" id="task-time" required placeholder="17:00 - 18:30" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-indigo-500 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">عنوان الحصة / المادة</label>
+                    <input type="text" id="task-title" required placeholder="مثال: حل حوليات باك فلسفة أو حفظ مقالة" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-indigo-500 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">التفاصيل أو الملاحظات</label>
+                    <input type="text" id="task-desc" placeholder="مثال: من كتاب المراجعة النهائية" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-indigo-500 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">التصنيف</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="flex items-center gap-2 p-2.5 border border-amber-200 dark:border-amber-900/50 bg-amber-50/70 dark:bg-amber-950/30 rounded-xl cursor-pointer">
+                            <input type="radio" name="task-type" value="bac" checked class="accent-amber-600">
+                            <span class="text-xs font-bold text-amber-900 dark:text-amber-300">📚 بكالوريا</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2.5 border border-blue-200 dark:border-blue-900/50 bg-blue-50/70 dark:bg-blue-950/30 rounded-xl cursor-pointer">
+                            <input type="radio" name="task-type" value="uni" class="accent-blue-600">
+                            <span class="text-xs font-bold text-blue-900 dark:text-blue-300">🎓 الجامعة</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2.5 border border-rose-200 dark:border-rose-900/50 bg-rose-50/70 dark:bg-rose-950/30 rounded-xl cursor-pointer">
+                            <input type="radio" name="task-type" value="karate" class="accent-rose-600">
+                            <span class="text-xs font-bold text-rose-900 dark:text-rose-300">🥋 كاراتيه</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 rounded-xl cursor-pointer">
+                            <input type="radio" name="task-type" value="rest" class="accent-slate-600">
+                            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">☕ راحة / أخرى</span>
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3 rounded-xl shadow-md transition mt-2">
+                    حفظ في الجدول
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- شريط التنقل السفلي للهاتف بتصميم حديث ملائم للإبهام (Thumb-friendly Bottom Bar) -->
+    <nav class="fixed bottom-0 inset-x-0 z-40 glass-header border-t border-slate-200/80 dark:border-slate-800/80 px-4 py-2 pb-[calc(8px+var(--sab))]">
+        <div class="max-w-md mx-auto flex items-center justify-around">
+            <button onclick="jumpToToday()" class="flex flex-col items-center gap-1 text-indigo-600 dark:text-indigo-400 font-extrabold text-[11px] py-1 px-3 rounded-2xl active:scale-95 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <span>اليوم الحالي</span>
+            </button>
+            <button onclick="openMatrixModal()" class="flex flex-col items-center gap-1 text-slate-600 dark:text-slate-400 font-extrabold text-[11px] py-1 px-3 rounded-2xl active:scale-95 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                <span>جدول الأسبوع</span>
+            </button>
+            <button onclick="openPomodoroModal()" class="flex flex-col items-center gap-1 text-slate-600 dark:text-slate-400 font-extrabold text-[11px] py-1 px-3 rounded-2xl active:scale-95 transition">
+                <div class="relative">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span id="pomo-dot-indicator" class="hidden absolute -top-1 -right-1 w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                </div>
+                <span id="pomo-nav-text">مؤقت الباك</span>
+            </button>
+            <button onclick="shareTodaySchedule()" class="flex flex-col items-center gap-1 text-slate-600 dark:text-slate-400 font-extrabold text-[11px] py-1 px-3 rounded-2xl active:scale-95 transition" title="مشاركة مهام اليوم">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                <span>مشاركة</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        /* ========================================================
+           نظام الحماية والأمان بكلمة المرور (Authentication System)
+           ======================================================== */
+        const DEFAULT_PASSWORDS = ['nour2026', 'nour', '2026', '1234'];
+        let isAuthenticated = false;
+
+        function checkAuth() {
+            const isSaved = localStorage.getItem('nour_authenticated') === '1' || sessionStorage.getItem('nour_authenticated') === '1';
+            if (isSaved) {
+                isAuthenticated = true;
+                hideLockScreen(false);
+            } else {
+                isAuthenticated = false;
+                showLockScreen();
+            }
+        }
+
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('password-input');
+            const entered = input.value.trim();
+            const remember = document.getElementById('remember-me').checked;
+            const errorEl = document.getElementById('password-error');
+            const cardEl = document.getElementById('lock-card');
+
+            const customPass = localStorage.getItem('nour_custom_password');
+            const isValid = (customPass && entered === customPass) || DEFAULT_PASSWORDS.includes(entered.toLowerCase());
+
+            if (isValid) {
+                errorEl.classList.add('hidden');
+                isAuthenticated = true;
+                if (remember) {
+                    localStorage.setItem('nour_authenticated', '1');
+                } else {
+                    sessionStorage.setItem('nour_authenticated', '1');
+                }
+                playVictorySound();
+                triggerConfetti();
+                hideLockScreen(true);
+            } else {
+                // هز الكارت وتنبيه بالخطأ
+                errorEl.classList.remove('hidden');
+                cardEl.classList.remove('animate-shake');
+                void cardEl.offsetWidth; // re-trigger animation
+                cardEl.classList.add('animate-shake');
+                playTone(220, 'sawtooth', 0.2);
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        function hideLockScreen(animated = true) {
+            const lockScreen = document.getElementById('lock-screen');
+            if (!lockScreen) return;
+            if (animated) {
+                lockScreen.style.opacity = '0';
+                lockScreen.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    lockScreen.classList.add('hidden');
+                }, 500);
+            } else {
+                lockScreen.classList.add('hidden');
+            }
+        }
+
+        function showLockScreen() {
+            const lockScreen = document.getElementById('lock-screen');
+            if (!lockScreen) return;
+            lockScreen.classList.remove('hidden');
+            lockScreen.style.opacity = '1';
+            lockScreen.style.pointerEvents = 'auto';
+            const input = document.getElementById('password-input');
+            if (input) {
+                input.value = '';
+                setTimeout(() => input.focus(), 300);
+            }
+        }
+
+        function lockApp() {
+            localStorage.removeItem('nour_authenticated');
+            sessionStorage.removeItem('nour_authenticated');
+            isAuthenticated = false;
+            playTone(300, 'sine', 0.15);
+            showLockScreen();
+        }
+
+        function togglePasswordVisibility() {
+            const input = document.getElementById('password-input');
+            const eye = document.getElementById('eye-icon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                eye.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                eye.textContent = '👁️';
+            }
+        }
+
+        /* ========================================================
+           قاعدة بيانات جدول نور (L3 اللغة الروسية - جامعة الجزائر 2 + بكالوريا + كاراتيه)
+           الصور من Unsplash بروابط مجانية حقيقية ومحسنة للسرعة
+           ======================================================== */
+        const scheduleData = [
+            {
+                id: 'sat',
+                name: 'السبت',
+                shortDesc: 'جامعة + تدريب كاراتيه مسائي',
+                isGreenNoUni: false,
+                isKarateBox: true,
+                // صورة واقعية من Unsplash: كاراتيه وتدريب قتالي في الدوجو
+                heroImage: 'https://images.unsplash.com/photo-1555597673-b21d5c935865?w=800&auto=format&fit=crop&q=80',
+                tasks: [
+                    { id: 'sat-1', startMinutes: 510, endMinutes: 690, time: '08:30 - 11:30', title: 'TRADUCTION (ترجمة)', subtitle: 'جامعة الجزائر 2 • M. Melbous (حصتين متتاليتين)', type: 'uni' },
+                    { id: 'sat-2', startMinutes: 690, endMinutes: 780, time: '11:30 - 13:00', title: 'استراحة غداء + حفظ مصطلحات', subtitle: 'فراغ جامعي: استغلال 1.5 ساعة لمراجعة خفيفة للباك بالمكتبة', type: 'bac' },
+                    { id: 'sat-3', startMinutes: 780, endMinutes: 960, time: '13:00 - 16:00', title: 'MÉTHODOLOGIE (منهجية البحث)', subtitle: 'جامعة الجزائر 2 • M. Benotmane (حصتين)', type: 'uni' },
+                    { id: 'sat-4', startMinutes: 990, endMinutes: 1140, time: '16:30 - 19:00', title: 'تدريب الكاراتيه 🥋', subtitle: 'حصة تدريب أساسية في الدوجو (محددة بإطار أحمر بالدفتر)', type: 'karate' },
+                    { id: 'sat-5', startMinutes: 1230, endMinutes: 1320, time: '20:30 - 22:00', title: 'مراجعة خفيفة ومطالعة', subtitle: 'ملخصات سريعة لتثبيت مواد الباك بدون سهر مفرط', type: 'bac' }
+                ]
+            },
+            {
+                id: 'sun',
+                name: 'الأحد',
+                shortDesc: 'يوم جامعي كامل + معسكر باك مسائي',
+                isGreenNoUni: false,
+                isKarateBox: false,
+                // صورة واقعية من Unsplash: مدرجات وقاعات محاضرات جامعية
+                heroImage: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=800&auto=format&fit=crop&q=80',
+                tasks: [
+                    { id: 'sun-1', startMinutes: 510, endMinutes: 690, time: '08:30 - 11:30', title: 'LINGUISTIQUE (لسانيات)', subtitle: 'جامعة الجزائر 2 • M. Miloud (حصتين)', type: 'uni' },
+                    { id: 'sun-2', startMinutes: 690, endMinutes: 780, time: '11:30 - 13:00', title: 'LANGUES DE SPÉCIALITÉS', subtitle: 'جامعة الجزائر 2 • M. Miloud', type: 'uni' },
+                    { id: 'sun-3', startMinutes: 780, endMinutes: 960, time: '13:00 - 16:00', title: 'CIVILISATION & INTERCULTURALITÉ', subtitle: 'جامعة الجزائر 2 • M. Amar Setti (حصتين)', type: 'uni' },
+                    { id: 'sun-4', startMinutes: 960, endMinutes: 1080, time: '16:00 - 18:00', title: 'العودة للمنزل واسترجاع الطاقة 💤', subtitle: 'غداء وراحة ذهنية بعد يوم جامعي طويل', type: 'rest' },
+                    { id: 'sun-5', startMinutes: 1080, endMinutes: 1230, time: '18:00 - 20:30', title: 'حصة تركيز البكالوريا 📚', subtitle: 'لا يوجد كاراتيه اليوم: مادة أساسية + حل تمارين متقدمة', type: 'bac' },
+                    { id: 'sun-6', startMinutes: 1260, endMinutes: 1320, time: '21:00 - 22:00', title: 'تحضير سريع لمحاضرات الغد', subtitle: 'تجهيز دروس الاثنين للغة الروسية', type: 'uni' }
+                ]
+            },
+            {
+                id: 'mon',
+                name: 'الاثنين',
+                shortDesc: 'جامعة كامل اليوم + تدريب كاراتيه',
+                isGreenNoUni: false,
+                isKarateBox: true,
+                // صورة واقعية من Unsplash: حزام الكاراتيه والتركيز
+                heroImage: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&auto=format&fit=crop&q=80',
+                tasks: [
+                    { id: 'mon-1', startMinutes: 510, endMinutes: 690, time: '08:30 - 11:30', title: 'INTRODUCTION À LA DIDACTIQUE', subtitle: 'جامعة الجزائر 2 • M. Rigui (حصتين)', type: 'uni' },
+                    { id: 'mon-2', startMinutes: 690, endMinutes: 780, time: '11:30 - 13:00', title: 'PRATIQUE DE COMMUNICATION ORALE', subtitle: 'جامعة الجزائر 2 • M. Rigui (ساعة تدريب شفوي)', type: 'uni' },
+                    { id: 'mon-3', startMinutes: 780, endMinutes: 960, time: '13:00 - 16:00', title: 'LITTÉRATURE (Théorie et pratique)', subtitle: 'جامعة الجزائر 2 • M. Amar Setti (حصتين)', type: 'uni' },
+                    { id: 'mon-4', startMinutes: 990, endMinutes: 1140, time: '16:30 - 19:00', title: 'تدريب الكاراتيه 🥋', subtitle: 'الحصة الثانية في الأسبوع (محددة بإطار أحمر)', type: 'karate' },
+                    { id: 'mon-5', startMinutes: 1230, endMinutes: 1305, time: '20:30 - 21:45', title: 'استرخاء ونوم مبكر 🌙', subtitle: 'النوم الجيد لاستغلال صباح الثلاثاء الحر لصالح الباك', type: 'rest' }
+                ]
+            },
+            {
+                id: 'tue',
+                name: 'الثلاثاء',
+                shortDesc: 'صباح حر للباك + جامعة مساءً',
+                isGreenNoUni: false,
+                isKarateBox: false,
+                // صورة واقعية من Unsplash: طاولة دراسة وكتب وأقلام مركزة
+                heroImage: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=80',
+                tasks: [
+                    { id: 'tue-1', startMinutes: 450, endMinutes: 645, time: '07:30 - 10:45', title: 'الفترة الذهبية للبكالوريا 🌟', subtitle: 'الجامعة فارغة صبيحة اليوم! مراجعة مادة أساسية بأقصى درجات التركيز', type: 'bac' },
+                    { id: 'tue-2', startMinutes: 690, endMinutes: 870, time: '11:30 - 14:30', title: 'ATELIER DE LECTURE ET D\'ÉCRITURE', subtitle: 'جامعة الجزائر 2 • M. Bouziane (حصتين)', type: 'uni' },
+                    { id: 'tue-3', startMinutes: 870, endMinutes: 960, time: '14:30 - 16:00', title: 'ENTREPRENARIAT (مقاولاتية)', subtitle: 'جامعة الجزائر 2 • Mme Zekagh', type: 'uni' },
+                    { id: 'tue-4', startMinutes: 960, endMinutes: 1080, time: '16:00 - 18:00', title: 'نهاية دوام الجامعة للأسبوع 🎉', subtitle: 'العودة للبيت واستراحة قبل حصة الباك المسائية', type: 'rest' },
+                    { id: 'tue-5', startMinutes: 1110, endMinutes: 1290, time: '18:30 - 21:30', title: 'حل مواضيع بكالوريا + تمارين', subtitle: 'مواضيع نموذجية (غداً الأربعاء لا توجد جامعة إطلاقاً)', type: 'bac' }
+                ]
+            },
+            {
+                id: 'wed',
+                name: 'الأربعاء',
+                shortDesc: 'تفرغ تام (GREEN) + تدريب كاراتيه',
+                isGreenNoUni: true,
+                isKarateBox: true,
+                // صورة واقعية من Unsplash: كتب ومكتب دراسي هادئ للتركيز التام
+                heroImage: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800&auto=format&fit=crop&q=80',
+                tasks: [
+                    { id: 'wed-1', startMinutes: 480, endMinutes: 720, time: '08:00 - 12:00', title: 'معسكر البكالوريا الصباحي (4 ساعات) 🔥', subtitle: 'يوم بدون جامعة (أخضر): ساعتان مادة رئيسية + ساعتان حل تمارين', type: 'bac' },
+                    { id: 'wed-2', startMinutes: 720, endMinutes: 840, time: '12:00 - 14:00', title: 'غداء وقيلولة لاستعادة الحيوية', subtitle: 'استراحة بدنية هامة قبل الحصة التدريبية', type: 'rest' },
+                    { id: 'wed-3', startMinutes: 840, endMinutes: 960, time: '14:00 - 16:00', title: 'مراجعة محاضرات اللغة الروسية', subtitle: 'تلخيص دروس الأسبوع وترتيب البحوث', type: 'uni' },
+                    { id: 'wed-4', startMinutes: 990, endMinutes: 1140, time: '16:30 - 19:00', title: 'تدريب الكاراتيه 🥋', subtitle: 'الحصة الثالثة في الأسبوع بكامل طاقتك الرياضية', type: 'karate' },
+                    { id: 'wed-5', startMinutes: 1230, endMinutes: 1320, time: '20:30 - 22:00', title: 'حفظ مواد البكالوريا (تاريخ / شريعة)', subtitle: 'جلسة الحفظ الهادئة وتثبيت المفاهيم قبل النوم', type: 'bac' }
+                ]
+            },
+            {
+                id: 'thu',
+                name: 'الخميس',
+                shortDesc: 'تفرغ كامل (GREEN) للباك والجامعة',
+                isGreenNoUni: true,
+                isKarateBox: false,
+                // صورة واقعية من Unsplash: مكتبة راقية ومراجع وكتب
+                heroImage: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800&auto=format&fit=crop&q=80',
+                tasks: [
+                    { id: 'thu-1', startMinutes: 480, endMinutes: 720, time: '08:00 - 12:00', title: 'حصة بكالوريا مكثفة وحل حوليات 📚', subtitle: 'حل مواضيع بكالوريا سابقة ومقارنة الإجابات النموذجية', type: 'bac' },
+                    { id: 'thu-2', startMinutes: 720, endMinutes: 840, time: '12:00 - 14:00', title: 'استراحة الغداء واستجمام', subtitle: 'وقت راحة واسترجاع التركيز', type: 'rest' },
+                    { id: 'thu-3', startMinutes: 840, endMinutes: 1050, time: '14:00 - 17:30', title: 'حصة الباك (فلسفة / لغات أجنبية)', subtitle: 'صياغة مقالات فلسفية وتحليل نصوص', type: 'bac' },
+                    { id: 'thu-4', startMinutes: 1080, endMinutes: 1200, time: '18:00 - 20:00', title: 'بحوث وواجبات الجامعة 🎓', subtitle: 'إنهاء عروض الترجمة والمنهجية الخاصة بيوم السبت القادم', type: 'uni' },
+                    { id: 'thu-5', startMinutes: 1230, endMinutes: 1350, time: '20:30 - 22:30', title: 'وقت حر واسترخاء تام ☕', subtitle: 'جلسة هدوء وراحة ذهنية', type: 'rest' }
+                ]
+            },
+            {
+                id: 'fri',
+                name: 'الجمعة',
+                shortDesc: 'تفرغ (GREEN) • تقييم الأسبوع والراحة',
+                isGreenNoUni: true,
+                isKarateBox: false,
+                // صورة واقعية من Unsplash: قهوة صباحية وهدوء يوم الجمعة
+                heroImage: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&auto=format&fit=crop&q=80',
+                tasks: [
+                    { id: 'fri-1', startMinutes: 510, endMinutes: 690, time: '08:30 - 11:30', title: 'محاكاة امتحان باك تجريبي', subtitle: 'تثبيت ومراجعة أسبوعية في توقيت الامتحان الحقيقي', type: 'bac' },
+                    { id: 'fri-2', startMinutes: 690, endMinutes: 900, time: '11:30 - 15:00', title: 'صلاة الجمعة، الغداء والراحة 🕌', subtitle: 'تجديد الروح والطاقة والاسترخاء', type: 'rest' },
+                    { id: 'fri-3', startMinutes: 900, endMinutes: 1050, time: '15:00 - 17:30', title: 'تحضير دروس السبت (Traduction)', subtitle: 'مراجعة خفيفة ومطالعة نصوص بداية الأسبوع الجامعي', type: 'uni' },
+                    { id: 'fri-4', startMinutes: 1080, endMinutes: 1320, time: '18:00 - 22:00', title: 'أمسية هادئة ونوم مبكر 🌙', subtitle: 'النوم الكافي لانطلاقة السبت القوي بكل همة', type: 'rest' }
+                ]
+            }
+        ];
+
+        /* ================= المتغيرات العامة ================= */
+        let currentDayIndex = 0;
+        let activeFilter = 'all';
+        let completedTasks = {};
+        let customTasksByDay = {};
+        let soundEnabled = true;
+        let streakCount = 1;
+
+        // متغيرات مؤقت البومودورو
+        let pomoInterval = null;
+        let pomoTotalSeconds = 25 * 60;
+        let pomoRemainingSeconds = 25 * 60;
+        let pomoRunning = false;
+
+        /* ================= نظام الصوت التفاعلي (Web Audio API) ================= */
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) audioCtx = new AudioContext();
+            }
+        }
+
+        function playTone(freq, type, duration, delay = 0) {
+            if (!soundEnabled) return;
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime + delay);
+
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime + delay);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + delay + duration);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start(audioCtx.currentTime + delay);
+                osc.stop(audioCtx.currentTime + delay + duration);
+            } catch (e) {
+                console.warn('Audio not allowed yet', e);
+            }
+        }
+
+        // نغمة إنجاز مهمة واحدة (Tick خفيف ومرضي)
+        function playCheckSound() {
+            playTone(523.25, 'sine', 0.12, 0);       // C5
+            playTone(659.25, 'sine', 0.15, 0.08);   // E5
+        }
+
+        // نغمة اكتمال اليوم (وتر انتصار بهيج)
+        function playVictorySound() {
+            playTone(523.25, 'triangle', 0.2, 0);     // C5
+            playTone(659.25, 'triangle', 0.25, 0.1);  // E5
+            playTone(783.99, 'triangle', 0.3, 0.2);   // G5
+            playTone(1046.5, 'triangle', 0.45, 0.3);  // C6
+        }
+
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 70,
+                    spread: 60,
+                    origin: { y: 0.75 },
+                    colors: ['#6366f1', '#e11d48', '#f59e0b', '#10b981']
+                });
+            }
+        }
+
+        function triggerFullCelebration() {
+            if (typeof confetti === 'function') {
+                const duration = 2.5 * 1000;
+                const end = Date.now() + duration;
+
+                (function frame() {
+                    confetti({
+                        particleCount: 4,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: ['#6366f1', '#e11d48', '#f59e0b']
+                    });
+                    confetti({
+                        particleCount: 4,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: ['#10b981', '#3b82f6', '#ec4899']
+                    });
+
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame);
+                    }
+                }());
+            }
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            localStorage.setItem('nour_schedule_sound', soundEnabled ? '1' : '0');
+            updateAudioUI();
+            if (soundEnabled) playTone(440, 'sine', 0.1);
+        }
+
+        function updateAudioUI() {
+            const onIcon = document.getElementById('sound-icon-on');
+            const offIcon = document.getElementById('sound-icon-off');
+            if (soundEnabled) {
+                onIcon.classList.remove('hidden');
+                offIcon.classList.add('hidden');
+            } else {
+                onIcon.classList.add('hidden');
+                offIcon.classList.remove('hidden');
+            }
+        }
+
+        /* ================= الوضع الليلي (Dark Mode) ================= */
+        function initTheme() {
+            const savedTheme = localStorage.getItem('nour_schedule_theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark) || !savedTheme) {
+                // الوضع الافتراضي ليل داكن أنيق
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            updateThemeIcons();
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('nour_schedule_theme', isDark ? 'dark' : 'light');
+            updateThemeIcons();
+            playTone(isDark ? 350 : 550, 'sine', 0.1);
+        }
+
+        function updateThemeIcons() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const sun = document.getElementById('theme-sun');
+            const moon = document.getElementById('theme-moon');
+            if (isDark) {
+                sun.classList.remove('hidden');
+                moon.classList.add('hidden');
+            } else {
+                sun.classList.add('hidden');
+                moon.classList.remove('hidden');
+            }
+        }
+
+        /* ================= حفظ واسترجاع الحالة ================= */
+        function loadState() {
+            try {
+                const savedChecks = localStorage.getItem('nour_schedule_checks_v2');
+                if (savedChecks) completedTasks = JSON.parse(savedChecks);
+
+                const savedCustom = localStorage.getItem('nour_schedule_custom_v2');
+                if (savedCustom) customTasksByDay = JSON.parse(savedCustom);
+
+                const savedSound = localStorage.getItem('nour_schedule_sound');
+                if (savedSound !== null) soundEnabled = (savedSound === '1');
+
+                const savedStreak = localStorage.getItem('nour_schedule_streak');
+                if (savedStreak) streakCount = parseInt(savedStreak, 10) || 1;
+                document.getElementById('streak-count').textContent = streakCount;
+            } catch (e) {
+                console.warn('Could not load state', e);
+            }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem('nour_schedule_checks_v2', JSON.stringify(completedTasks));
+                localStorage.setItem('nour_schedule_custom_v2', JSON.stringify(customTasksByDay));
+                localStorage.setItem('nour_schedule_streak', streakCount.toString());
+            } catch (e) {
+                console.warn('Could not save state', e);
+            }
+        }
+
+        // كشف اليوم الحالي تلقائياً
+        function detectTodayIndex() {
+            // في JS: 0=الأحد، 1=الاثنين، 2=الثلاثاء، 3=الأربعاء، 4=الخميس، 5=الجمعة، 6=السبت
+            // ترتيبنا: 0=السبت، 1=الأحد، 2=الاثنين، 3=الثلاثاء، 4=الأربعاء، 5=الخميس، 6=الجمعة
+            const jsDay = new Date().getDay();
+            return (jsDay + 1) % 7;
+        }
+
+        function getDayTasks(dayId) {
+            const baseDay = scheduleData.find(d => d.id === dayId);
+            const custom = customTasksByDay[dayId] || [];
+            return [...baseDay.tasks, ...custom];
+        }
+
+        /* ================= بناء واجهة التبويبات والمحتوى ================= */
+        function renderDayTabs() {
+            const container = document.getElementById('day-tabs');
+            container.innerHTML = '';
+            const todayIdx = detectTodayIndex();
+
+            scheduleData.forEach((day, idx) => {
+                const isSelected = idx === currentDayIndex;
+                const isToday = idx === todayIdx;
+
+                const btn = document.createElement('button');
+                btn.onclick = () => selectDay(idx);
+
+                let classes = 'shrink-0 px-3.5 py-2 rounded-2xl font-black text-xs transition-all flex items-center gap-1.5 relative select-none ';
+                
+                if (isSelected) {
+                    classes += 'bg-slate-900 dark:bg-white text-white dark:text-slate-950 shadow-md scale-[1.03] ';
+                } else if (day.isGreenNoUni) {
+                    classes += 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 ';
+                } else {
+                    classes += 'bg-white dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border border-slate-200/90 dark:border-slate-700/60 ';
+                }
+
+                // إشارة لحصة الكاراتيه
+                if (day.isKarateBox && !isSelected) {
+                    classes += 'ring-1.5 ring-rose-400/80 dark:ring-rose-500/70 ';
+                }
+
+                btn.className = classes;
+
+                let icons = '';
+                if (isToday) {
+                    icons += '<span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-ping inline-block" title="اليوم"></span>';
+                }
+                if (day.isKarateBox) {
+                    icons += '<span class="text-[10px]">🥋</span>';
+                }
+                if (day.isGreenNoUni) {
+                    icons += '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>';
+                }
+
+                btn.innerHTML = `
+                    <span>${day.name}</span>
+                    ${icons}
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function renderDaySchedule() {
+            const day = scheduleData[currentDayIndex];
+            const isToday = currentDayIndex === detectTodayIndex();
+
+            // تحديث البانر العلوي وصورة Unsplash
+            const heroImg = document.getElementById('day-hero-img');
+            heroImg.src = day.heroImage;
+
+            document.getElementById('day-title').innerHTML = `
+                <span>يوم ${day.name}</span>
+                ${isToday ? '<span class="text-xs font-black bg-indigo-500 text-white px-2 py-0.5 rounded-lg">اليوم</span>' : ''}
+            `;
+            document.getElementById('day-subtitle').textContent = day.shortDesc;
+
+            // الشارات الخاصة باليوم
+            const badgesContainer = document.getElementById('hero-special-badges');
+            let specialHTML = '';
+            if (day.isGreenNoUni) {
+                specialHTML += '<span class="px-2 py-0.5 rounded-lg bg-emerald-500/80 backdrop-blur-md text-white text-[10px] font-black border border-emerald-300/30">🟢 بدون جامعة</span>';
+            } else {
+                specialHTML += '<span class="px-2 py-0.5 rounded-lg bg-blue-600/80 backdrop-blur-md text-white text-[10px] font-black border border-blue-300/30">🎓 جامعة</span>';
+            }
+            if (day.isKarateBox) {
+                specialHTML += '<span class="px-2 py-0.5 rounded-lg bg-rose-600/90 backdrop-blur-md text-white text-[10px] font-black border border-rose-300/30">🥋 كاراتيه</span>';
+            }
+            badgesContainer.innerHTML = specialHTML;
+
+            // جلب المهام وتطبيق الفلتر
+            const allTasks = getDayTasks(day.id);
+            const filteredTasks = activeFilter === 'all'
+                ? allTasks
+                : allTasks.filter(t => t.type === activeFilter);
+
+            const list = document.getElementById('schedule-list');
+            list.innerHTML = '';
+
+            if (filteredTasks.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center py-10 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs">
+                        <div class="text-3xl mb-2">🌿</div>
+                        <p class="text-xs font-bold text-slate-700 dark:text-slate-300">لا توجد حصص من تصنيف "${getFilterArabic(activeFilter)}" في يوم ${day.name}</p>
+                        <button onclick="setFilter('all')" class="mt-3 text-xs font-black text-indigo-600 dark:text-indigo-400 underline">عرض كامل جدول اليوم</button>
+                    </div>
+                `;
+            } else {
+                filteredTasks.forEach(task => {
+                    const isDone = !!completedTasks[task.id];
+                    const typeConfig = getTypeBadge(task.type);
+
+                    const card = document.createElement('div');
+                    card.className = `task-card relative rounded-2xl p-3.5 border transition-all duration-200 shadow-xs flex items-start gap-3 cursor-pointer ${
+                        isDone 
+                            ? 'bg-slate-100/70 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800/60 opacity-60' 
+                            : `bg-white dark:bg-slate-900/90 ${typeConfig.borderClass}`
+                    }`;
+
+                    card.onclick = (e) => {
+                        if (e.target.closest('.delete-task-btn')) return;
+                        toggleTaskDone(task.id);
+                    };
+
+                    card.innerHTML = `
+                        <!-- زر الاختيار التفاعلي -->
+                        <button aria-label="حالة المهمة" class="checkbox-pop mt-0.5 w-6 h-6 rounded-xl border-2 flex items-center justify-center shrink-0 ${
+                            isDone 
+                                ? 'bg-emerald-500 border-emerald-500 text-white shadow-xs' 
+                                : 'border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800'
+                        }">
+                            ${isDone ? '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : ''}
+                        </button>
+
+                        <!-- تفاصيل الحصة -->
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between gap-2 mb-1">
+                                <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-lg num-font ${typeConfig.timeBadge}">
+                                    ⏰ ${task.time}
+                                </span>
+                                <span class="text-[10px] font-black px-2 py-0.5 rounded-lg flex items-center gap-1 ${typeConfig.badge}">
+                                    <span>${typeConfig.icon}</span>
+                                    <span>${typeConfig.label}</span>
+                                </span>
+                            </div>
+
+                            <h3 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white transition-all ${isDone ? 'line-through text-slate-400 dark:text-slate-500' : ''}">
+                                ${task.title}
+                            </h3>
+
+                            ${task.subtitle ? `
+                                <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed">
+                                    ${task.subtitle}
+                                </p>
+                            ` : ''}
+                        </div>
+
+                        ${task.isCustom ? `
+                            <button onclick="deleteCustomTask('${day.id}', '${task.id}')" class="delete-task-btn text-slate-400 hover:text-rose-500 p-1 text-xs" title="حذف">
+                                🗑️
+                            </button>
+                        ` : ''}
+                    `;
+                    list.appendChild(card);
+                });
+            }
+
+            updateProgress(allTasks);
+            checkActiveTask(allTasks);
+        }
+
+        function getTypeBadge(type) {
+            switch (type) {
+                case 'uni':
+                    return {
+                        label: 'الجامعة',
+                        icon: '🎓',
+                        badge: 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/50',
+                        timeBadge: 'bg-blue-600 text-white',
+                        borderClass: 'border-r-4 border-r-blue-600 border-slate-200 dark:border-slate-800'
+                    };
+                case 'bac':
+                    return {
+                        label: 'البكالوريا',
+                        icon: '📚',
+                        badge: 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50',
+                        timeBadge: 'bg-amber-500 text-white',
+                        borderClass: 'border-r-4 border-r-amber-500 border-slate-200 dark:border-slate-800'
+                    };
+                case 'karate':
+                    return {
+                        label: 'كاراتيه',
+                        icon: '🥋',
+                        badge: 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/50',
+                        timeBadge: 'bg-rose-600 text-white',
+                        borderClass: 'border-r-4 border-r-rose-600 border-rose-200 dark:border-rose-900/60 bg-rose-50/20 dark:bg-rose-950/10'
+                    };
+                default:
+                    return {
+                        label: 'استراحة / يومي',
+                        icon: '☕',
+                        badge: 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300',
+                        timeBadge: 'bg-slate-600 text-white',
+                        borderClass: 'border-r-4 border-r-slate-400 dark:border-r-slate-600 border-slate-200 dark:border-slate-800'
+                    };
+            }
+        }
+
+        function getFilterArabic(filter) {
+            if (filter === 'uni') return 'الجامعة';
+            if (filter === 'bac') return 'البكالوريا';
+            if (filter === 'karate') return 'الكاراتيه';
+            return 'الكل';
+        }
+
+        function selectDay(index) {
+            currentDayIndex = index;
+            renderDayTabs();
+            renderDaySchedule();
+            playTone(400, 'sine', 0.05);
+        }
+
+        function jumpToToday() {
+            selectDay(detectTodayIndex());
+        }
+
+        function toggleTaskDone(taskId) {
+            const wasDone = !!completedTasks[taskId];
+            completedTasks[taskId] = !wasDone;
+            saveState();
+
+            if (!wasDone) {
+                playCheckSound();
+                triggerConfetti();
+            } else {
+                playTone(300, 'sine', 0.06);
+            }
+
+            renderDaySchedule();
+        }
+
+        function updateProgress(tasks) {
+            if (!tasks.length) return;
+            const doneCount = tasks.filter(t => completedTasks[t.id]).length;
+            const percent = Math.round((doneCount / tasks.length) * 100);
+
+            const pText = document.getElementById('progress-text');
+            const pBar = document.getElementById('progress-bar');
+            const pIcon = document.getElementById('progress-icon');
+            const pFraction = document.getElementById('tasks-fraction');
+            const pMsg = document.getElementById('progress-status-msg');
+
+            pText.textContent = `${percent}%`;
+            pBar.style.width = `${percent}%`;
+            pFraction.textContent = `(${doneCount}/${tasks.length})`;
+
+            if (percent === 100) {
+                pIcon.textContent = '🏆';
+                pMsg.textContent = 'أسطوري! أكملت كل حصص اليوم 🔥';
+                playVictorySound();
+                triggerFullCelebration();
+            } else if (percent >= 60) {
+                pIcon.textContent = '⚡';
+                pMsg.textContent = 'أداء ممتاز، اقتربت من إنهاء اليوم!';
+            } else if (percent > 0) {
+                pIcon.textContent = '🚀';
+                pMsg.textContent = 'بداية موفقة.. استمر بالتركيز!';
+            } else {
+                pIcon.textContent = '🌱';
+                pMsg.textContent = 'ابدأ أول مهمة بنشاط!';
+            }
+        }
+
+        function confirmResetDay() {
+            const day = scheduleData[currentDayIndex];
+            if (confirm(`هل أنت متأكد من تصفير إنجاز يوم ${day.name}؟`)) {
+                const tasks = getDayTasks(day.id);
+                tasks.forEach(t => {
+                    delete completedTasks[t.id];
+                });
+                saveState();
+                renderDaySchedule();
+                playTone(300, 'sine', 0.1);
+            }
+        }
+
+        function setFilter(filter) {
+            activeFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-900', 'dark:bg-white', 'text-white', 'dark:text-slate-900');
+            });
+            const activeBtn = document.getElementById(`filter-${filter}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-slate-900', 'dark:bg-white', 'text-white', 'dark:text-slate-900');
+            }
+            renderDaySchedule();
+            playTone(450, 'sine', 0.05);
+        }
+
+        /* ================= كاشف الحصة الحالية حسب الساعة ================= */
+        function checkActiveTask(tasks) {
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            const isToday = currentDayIndex === detectTodayIndex();
+
+            const card = document.getElementById('live-active-card');
+            const content = document.getElementById('live-active-content');
+            const nowBadge = document.getElementById('hero-now-badge');
+
+            if (!isToday) {
+                card.classList.add('hidden');
+                nowBadge.classList.add('hidden');
+                return;
+            }
+
+            const activeTask = tasks.find(t => t.startMinutes && t.endMinutes && currentMinutes >= t.startMinutes && currentMinutes < t.endMinutes);
+
+            if (activeTask) {
+                card.classList.remove('hidden');
+                nowBadge.classList.remove('hidden');
+                content.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="font-black text-slate-900 dark:text-white">${activeTask.title}</span>
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400 block">${activeTask.subtitle || ''}</span>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-lg bg-indigo-600 text-white font-extrabold text-[11px] num-font">${activeTask.time}</span>
+                    </div>
+                `;
+            } else {
+                card.classList.add('hidden');
+                nowBadge.classList.add('hidden');
+            }
+        }
+
+        /* ================= الساعة الحية ================= */
+        function updateLiveClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const clockEl = document.getElementById('live-clock');
+            if (clockEl) clockEl.textContent = `${h}:${m}`;
+        }
+        setInterval(updateLiveClock, 1000);
+
+        /* ================= إضافة مهمة مخصصة ================= */
+        function openAddModal() {
+            const day = scheduleData[currentDayIndex];
+            document.getElementById('modal-day-name').textContent = day.name;
+            document.getElementById('add-modal').classList.remove('hidden');
+        }
+
+        function closeAddModal() {
+            document.getElementById('add-modal').classList.add('hidden');
+            document.getElementById('add-task-form').reset();
+        }
+
+        function saveCustomTask(e) {
+            e.preventDefault();
+            const day = scheduleData[currentDayIndex];
+            const time = document.getElementById('task-time').value.trim();
+            const title = document.getElementById('task-title').value.trim();
+            const desc = document.getElementById('task-desc').value.trim();
+            const type = document.querySelector('input[name="task-type"]:checked').value;
+
+            if (!customTasksByDay[day.id]) customTasksByDay[day.id] = [];
+            customTasksByDay[day.id].push({
+                id: 'custom-' + Date.now(),
+                time,
+                title,
+                subtitle: desc || 'مهمة مضافة بواسطة نور',
+                type,
+                isCustom: true
+            });
+
+            saveState();
+            closeAddModal();
+            renderDaySchedule();
+            playTone(600, 'sine', 0.12);
+        }
+
+        function deleteCustomTask(dayId, taskId) {
+            if (!customTasksByDay[dayId]) return;
+            customTasksByDay[dayId] = customTasksByDay[dayId].filter(t => t.id !== taskId);
+            delete completedTasks[taskId];
+            saveState();
+            renderDaySchedule();
+        }
+
+        /* ================= نافذة ملخص الأسبوع ================= */
+        function openMatrixModal() {
+            const container = document.getElementById('matrix-content');
+            container.innerHTML = '';
+
+            scheduleData.forEach((day, idx) => {
+                const row = document.createElement('div');
+                let rowStyle = 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/80';
+                if (day.isGreenNoUni) rowStyle = 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800/60';
+                if (day.isKarateBox) rowStyle += ' ring-1.5 ring-rose-400 dark:ring-rose-500';
+
+                row.className = `p-3 rounded-2xl border ${rowStyle} flex items-center justify-between cursor-pointer active:scale-98 transition`;
+                row.onclick = () => {
+                    closeMatrixModal();
+                    selectDay(idx);
+                };
+
+                row.innerHTML = `
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-black text-xs sm:text-sm text-slate-900 dark:text-white">${day.name}</span>
+                            ${day.isGreenNoUni ? '<span class="text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500 text-white font-extrabold">🟢 بدون جامعة</span>' : '<span class="text-[9px] px-1.5 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 font-bold">🎓 جامعة</span>'}
+                            ${day.isKarateBox ? '<span class="text-[9px] px-1.5 py-0.5 rounded-md bg-rose-600 text-white font-extrabold">🥋 كاراتيه</span>' : ''}
+                        </div>
+                        <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-1">${day.shortDesc}</p>
+                    </div>
+                    <span class="text-slate-400 dark:text-slate-500 text-sm font-bold">⬅</span>
+                `;
+                container.appendChild(row);
+            });
+
+            document.getElementById('matrix-modal').classList.remove('hidden');
+        }
+
+        function closeMatrixModal() {
+            document.getElementById('matrix-modal').classList.add('hidden');
+        }
+
+        /* ================= نظام البومودورو الدائري المتطور ================= */
+        function openPomodoroModal() {
+            document.getElementById('pomodoro-modal').classList.remove('hidden');
+        }
+
+        function closePomodoroModal() {
+            document.getElementById('pomodoro-modal').classList.add('hidden');
+        }
+
+        function setPomoDuration(minutes, label) {
+            if (pomoRunning) {
+                clearInterval(pomoInterval);
+                pomoRunning = false;
+                document.getElementById('pomo-play-btn').textContent = '▶';
+            }
+            pomoTotalSeconds = minutes * 60;
+            pomoRemainingSeconds = pomoTotalSeconds;
+            document.getElementById('pomo-state-label').textContent = label;
+            updatePomoDisplay();
+        }
+
+        function togglePomoPlay() {
+            const btn = document.getElementById('pomo-play-btn');
+            const dot = document.getElementById('pomo-dot-indicator');
+            const navText = document.getElementById('pomo-nav-text');
+
+            if (pomoRunning) {
+                clearInterval(pomoInterval);
+                pomoRunning = false;
+                btn.textContent = '▶';
+                btn.classList.remove('bg-rose-600');
+                btn.classList.add('bg-indigo-600');
+                dot.classList.add('hidden');
+                navText.textContent = 'مؤقت الباك';
+            } else {
+                pomoRunning = true;
+                btn.textContent = '⏸';
+                btn.classList.remove('bg-indigo-600');
+                btn.classList.add('bg-rose-600');
+                dot.classList.remove('hidden');
+                playTone(550, 'triangle', 0.15);
+
+                pomoInterval = setInterval(() => {
+                    pomoRemainingSeconds--;
+                    updatePomoDisplay();
+
+                    if (pomoRemainingSeconds <= 0) {
+                        clearInterval(pomoInterval);
+                        pomoRunning = false;
+                        btn.textContent = '▶';
+                        dot.classList.add('hidden');
+                        navText.textContent = 'انتهت الجلسة! 🎉';
+                        playVictorySound();
+                        triggerFullCelebration();
+                        alert('أحسنت يا نور! اكتملت جلسة التركيز بنجاح 🎯');
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetPomo() {
+            if (pomoInterval) clearInterval(pomoInterval);
+            pomoRunning = false;
+            pomoRemainingSeconds = pomoTotalSeconds;
+            document.getElementById('pomo-play-btn').textContent = '▶';
+            document.getElementById('pomo-dot-indicator').classList.add('hidden');
+            document.getElementById('pomo-nav-text').textContent = 'مؤقت الباك';
+            updatePomoDisplay();
+            playTone(350, 'sine', 0.08);
+        }
+
+        function updatePomoDisplay() {
+            const m = String(Math.floor(pomoRemainingSeconds / 60)).padStart(2, '0');
+            const s = String(pomoRemainingSeconds % 60).padStart(2, '0');
+            document.getElementById('pomo-time-display').textContent = `${m}:${s}`;
+            
+            // تحديث الشريط في الشريط السفلي إذا كان قيد التشغيل
+            if (pomoRunning) {
+                document.getElementById('pomo-nav-text').textContent = `${m}:${s}`;
+            }
+
+            // تحديث الدائرة الدائرية
+            const circle = document.getElementById('pomo-circle-bar');
+            const totalDash = 276.46; // 2 * PI * 44
+            const offset = totalDash * (1 - (pomoRemainingSeconds / pomoTotalSeconds));
+            circle.style.strokeDashoffset = offset;
+        }
+
+        /* ================= ميزة مشاركة مهام اليوم ================= */
+        function shareTodaySchedule() {
+            const day = scheduleData[currentDayIndex];
+            const tasks = getDayTasks(day.id);
+            let shareText = `🎯 جدول نور - يوم ${day.name} (${day.shortDesc}):\n\n`;
+
+            tasks.forEach(t => {
+                const isDone = completedTasks[t.id] ? '✅' : '⏳';
+                shareText += `${isDone} [${t.time}] ${t.title}\n`;
+            });
+
+            shareText += `\n🚀 منصة تنظيم الوقت - لغة روسية L3 • بكالوريا • كاراتيه`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: `جدول نور - يوم ${day.name}`,
+                    text: shareText
+                }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    alert('تم نسخ مهام اليوم للحافظة بنجاح! يمكنك لصقها في واتساب أو تليغرام 📋');
+                });
+            }
+        }
+
+        /* ================= دعم التمرير باللمس (Swipe Gestures) للهواتف ================= */
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const swipeArea = document.getElementById('swipe-area');
+
+        swipeArea.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        swipeArea.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const diff = touchEndX - touchStartX;
+            // في اللغة العربية RTL:
+            // سحب لليمين diff > 60 يعني الانتقال لليوم السابق
+            // سحب لليسار diff < -60 يعني الانتقال لليوم التالي
+            if (diff > 65) {
+                if (currentDayIndex > 0) selectDay(currentDayIndex - 1);
+            } else if (diff < -65) {
+                if (currentDayIndex < scheduleData.length - 1) selectDay(currentDayIndex + 1);
+            }
+        }
+
+        /* ================= التهيئة الأولية عند تحميل الصفحة ================= */
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            initTheme();
+            loadState();
+            currentDayIndex = detectTodayIndex();
+            updateLiveClock();
+            updateAudioUI();
+            renderDayTabs();
+            renderDaySchedule();
+            updatePomoDisplay();
+        });
+    </script>
+</body>
+</html>
